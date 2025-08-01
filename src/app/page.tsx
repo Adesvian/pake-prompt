@@ -1,103 +1,103 @@
-import Image from "next/image";
+"use client"; // <--- VERY IMPORTANT: This tells Next.js this is a Client Component for interactivity
+
+import { useState, useEffect } from "react"; // We'll need useState and useEffect hooks
+import { Button } from "@/components/ui/button"; // Assuming this is your UI button component
+import {
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged,
+  User,
+} from "firebase/auth"; // Import signOut and onAuthStateChanged
+import { auth, githubProvider, googleProvider } from "@/lib/firebase.config"; // Your Firebase config
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  // State to hold the current authenticated user
+  const [user, setUser] = useState<User | null>(null);
+  // State to indicate if the authentication state is still loading
+  const [loading, setLoading] = useState(true);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+  // useEffect to listen for authentication state changes
+  useEffect(() => {
+    // onAuthStateChanged returns an unsubscribe function that we can call
+    // when the component unmounts to clean up the listener.
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false); // Authentication state has been determined
+    });
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe();
+  }, []); // Empty dependency array means this effect runs once on mount
+
+  const signInWithGoogle = async () => {
+    try {
+      // signInWithPopup returns a Promise that resolves with a UserCredential
+      // The user state will be updated by the onAuthStateChanged listener
+      await signInWithPopup(auth, googleProvider);
+      console.log("Signed in with Google successfully!");
+    } catch (error) {
+      console.error("Error signing in with Google:", error);
+      // You can add more specific error handling here
+      // e.g., if (error.code === 'auth/popup-closed-by-user') { ... }
+    }
+  };
+
+  const signInWithGithub = async () => {
+    try {
+      // The user state will be updated by the onAuthStateChanged listener
+      await signInWithPopup(auth, githubProvider);
+      console.log("Signed in with GitHub successfully!");
+    } catch (error) {
+      console.error("Error signing in with GitHub:", error);
+      // You can add more specific error handling here
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      console.log("User signed out successfully!");
+      // The user state will be updated to null by the onAuthStateChanged listener
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
+  if (loading) {
+    return <p>Loading authentication state...</p>;
+  }
+
+  return (
+    <div style={{ padding: "20px", textAlign: "center" }}>
+      <h1>Firebase Authentication Example</h1>
+
+      {user ? ( // If a user is logged in
+        <div>
+          <p>Welcome, {user.displayName || user.email}!</p>
+          {user.photoURL && (
+            <img
+              src={user.photoURL}
+              alt="User profile"
+              style={{
+                borderRadius: "50%",
+                width: "50px",
+                height: "50px",
+                margin: "10px",
+              }}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          )}
+          <Button onClick={handleSignOut}>Sign Out</Button>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      ) : (
+        // If no user is logged in
+        <div>
+          <p>Please sign in to continue.</p>
+          <Button onClick={signInWithGoogle} style={{ marginRight: "10px" }}>
+            Login with Google
+          </Button>
+          <Button onClick={signInWithGithub}>Login with Github</Button>
+        </div>
+      )}
     </div>
   );
 }
