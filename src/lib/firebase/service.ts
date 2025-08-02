@@ -1,4 +1,12 @@
-import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  collection,
+  getDocs,
+  DocumentReference,
+} from "firebase/firestore";
 import { User } from "firebase/auth";
 import { app } from "@/lib/firebase/config";
 
@@ -29,5 +37,56 @@ export const saveUserToFirestore = async (user: User) => {
     }
   } else {
     console.log("User already exists in Firestore.");
+  }
+};
+
+export const fetchData = async (collectionName: string) => {
+  try {
+    const outputSnapshot = await getDocs(collection(db, collectionName));
+    const results: any[] = [];
+
+    for (const docSnap of outputSnapshot.docs) {
+      const outputData = docSnap.data();
+
+      let promptData = null;
+      let userData = null;
+
+      const promptRef = outputData.prompt_id as DocumentReference | null;
+
+      if (promptRef) {
+        const promptSnap = await getDoc(promptRef);
+        if (promptSnap.exists()) {
+          promptData = promptSnap.data();
+
+          const userRef = promptData.created_by as DocumentReference | null;
+          if (userRef) {
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists()) {
+              const user = userSnap.data();
+              userData = {
+                displayName: user.displayName ?? "Unknown",
+                photoURL: user.photoURL ?? null,
+              };
+            }
+          }
+          promptData = {
+            id: promptSnap.id,
+            ...promptData,
+            created_by: userData,
+          };
+        }
+      }
+
+      results.push({
+        id: docSnap.id,
+        ...outputData,
+        prompt_id: promptData,
+      });
+    }
+
+    return results;
+  } catch (err) {
+    console.error("Error fetching output with prompt + user:", err);
+    return [];
   }
 };

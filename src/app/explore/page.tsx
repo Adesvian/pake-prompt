@@ -1,12 +1,21 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BaseLayout from "../views/components/layout/base-layout";
 import { LoaderFour } from "@/components/ui/loader";
 import { cn } from "@/lib/utils";
-
+import { fetchData } from "@/lib/firebase/service";
 export default function ExplorePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getData = async () => {
+      const result = await fetchData("output");
+      console.log(result);
+    };
+
+    getData();
+  }, []);
 
   if (loading) {
     return (
