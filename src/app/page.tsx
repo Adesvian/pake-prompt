@@ -1,103 +1,73 @@
-"use client"; // <--- VERY IMPORTANT: This tells Next.js this is a Client Component for interactivity
-
-import { useState, useEffect } from "react"; // We'll need useState and useEffect hooks
-import { Button } from "@/components/ui/button"; // Assuming this is your UI button component
-import {
-  signInWithPopup,
-  signOut,
-  onAuthStateChanged,
-  User,
-} from "firebase/auth"; // Import signOut and onAuthStateChanged
-import { auth, githubProvider, googleProvider } from "@/lib/firebase.config"; // Your Firebase config
+import BaseLayout from "./views/components/layout/base-layout";
+import { ThreeDMarquee } from "@/components/ui/3d-marquee";
+import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
+import { TextGenerateEffect } from "@/components/ui/text-generate-effect";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export default function Home() {
-  // State to hold the current authenticated user
-  const [user, setUser] = useState<User | null>(null);
-  // State to indicate if the authentication state is still loading
-  const [loading, setLoading] = useState(true);
+  const words = `Prompt Smarter. Build Faster🚀.`;
 
-  // useEffect to listen for authentication state changes
-  useEffect(() => {
-    // onAuthStateChanged returns an unsubscribe function that we can call
-    // when the component unmounts to clean up the listener.
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false); // Authentication state has been determined
-    });
-
-    // Cleanup subscription on unmount
-    return () => unsubscribe();
-  }, []); // Empty dependency array means this effect runs once on mount
-
-  const signInWithGoogle = async () => {
-    try {
-      // signInWithPopup returns a Promise that resolves with a UserCredential
-      // The user state will be updated by the onAuthStateChanged listener
-      await signInWithPopup(auth, googleProvider);
-      console.log("Signed in with Google successfully!");
-    } catch (error) {
-      console.error("Error signing in with Google:", error);
-      // You can add more specific error handling here
-      // e.g., if (error.code === 'auth/popup-closed-by-user') { ... }
-    }
-  };
-
-  const signInWithGithub = async () => {
-    try {
-      // The user state will be updated by the onAuthStateChanged listener
-      await signInWithPopup(auth, githubProvider);
-      console.log("Signed in with GitHub successfully!");
-    } catch (error) {
-      console.error("Error signing in with GitHub:", error);
-      // You can add more specific error handling here
-    }
-  };
-
-  const handleSignOut = async () => {
-    try {
-      await signOut(auth);
-      console.log("User signed out successfully!");
-      // The user state will be updated to null by the onAuthStateChanged listener
-    } catch (error) {
-      console.error("Error signing out:", error);
-    }
-  };
-
-  if (loading) {
-    return <p>Loading authentication state...</p>;
-  }
+  const images = [
+    "/cover-1.jpeg",
+    "/cover-2.jpeg",
+    "/cover-3.jpeg",
+    "/cover-4.jpeg",
+    "/cover-5.jpeg",
+    "/cover-6.jpeg",
+    "/cover-7.jpeg",
+    "/cover-8.jpeg",
+    "/cover-9.jpeg",
+    "/cover-10.jpeg",
+    "/cover-11.jpeg",
+    "/cover-12.jpeg",
+    "/cover-13.jpeg",
+    "/cover-14.jpeg",
+    "/cover-15.jpeg",
+    "/cover-16.jpeg",
+    "/cover-17.jpeg",
+    "/cover-18.jpeg",
+    "/cover-19.jpeg",
+  ];
 
   return (
-    <div style={{ padding: "20px", textAlign: "center" }}>
-      <h1>Firebase Authentication Example</h1>
+    <BaseLayout>
+      <section className="relative flex flex-1 w-full items-center justify-center overflow-hidden">
+        <div className="relative z-20 mx-auto flex w-full max-w-6xl flex-col items-center justify-center px-4 text-white">
+          <TextGenerateEffect
+            className="text-center text-2xl font-bold text-balance md:text-4xl lg:text-6xl"
+            words={words}
+          />
+          <p className="mt-6 max-w-2xl text-center text-sm text-neutral-200 md:text-base">
+            Explore, save, modify, and share your prompts to inspire,
+            collaborate, and unlock the full potential of AI. You&apos;re not
+            just a user—you can be a creator, explorer, and contributor. And it
+            all starts with a single prompt.
+          </p>
 
-      {user ? ( // If a user is logged in
-        <div>
-          <p>Welcome, {user.displayName || user.email}!</p>
-          {user.photoURL && (
-            <img
-              src={user.photoURL}
-              alt="User profile"
-              style={{
-                borderRadius: "50%",
-                width: "50px",
-                height: "50px",
-                margin: "10px",
-              }}
-            />
-          )}
-          <Button onClick={handleSignOut}>Sign Out</Button>
+          <div className="mt-6 flex items-center justify-center">
+            <HoverBorderGradient
+              containerClassName="rounded-full"
+              as="button"
+              className="bg-black text-white flex items-center space-x-2 cursor-pointer"
+            >
+              <Link href="/explore" className="flex items-center space-x-2">
+                <span>Explore Now</span>
+                <ArrowRight />
+              </Link>
+            </HoverBorderGradient>
+          </div>
         </div>
-      ) : (
-        // If no user is logged in
-        <div>
-          <p>Please sign in to continue.</p>
-          <Button onClick={signInWithGoogle} style={{ marginRight: "10px" }}>
-            Login with Google
-          </Button>
-          <Button onClick={signInWithGithub}>Login with Github</Button>
-        </div>
-      )}
-    </div>
+
+        {/* overlay hitam */}
+        <div className="absolute inset-0 z-10 h-full w-full bg-black/80 dark:bg-black/70" />
+
+        {/* background animasi */}
+        <ThreeDMarquee
+          className="pointer-events-none absolute inset-0 h-full w-full"
+          images={images}
+        />
+      </section>
+    </BaseLayout>
   );
 }
