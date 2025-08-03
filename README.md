@@ -1,36 +1,120 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🧠 PakePrompt
 
-## Getting Started
+PakePrompt adalah aplikasi web berbasis komunitas yang menyimpan dan membagikan berbagai **AI prompt** beserta **hasil/output-nya**, tanpa integrasi langsung ke model AI. Cocok buat siapa aja yang butuh referensi prompt efektif buat ChatGPT, Midjourney, Claude, dan tools lainnya.
 
-First, run the development server:
+---
+
+## 📌 Description
+
+Akhir-akhir ini AI makin booming di mana-mana — dari bantu kerjaan, ngonten, sampai hiburan. Tapi banyak yang bingung pakai prompt yang bagus itu kayak gimana. PakePrompt hadir sebagai platform untuk:
+
+- Menyimpan prompt AI + hasilnya
+- Berbagi ke komunitas
+- Cari inspirasi dan referensi prompt yang relevan
+
+---
+
+## ⚙️ Technologies Used
+
+### Frontend
+
+- [Next.js](https://nextjs.org/) – React Framework untuk SSR dan performa
+- [Tailwind CSS](https://tailwindcss.com/) – Styling cepat & konsisten
+- [ShadCN UI](https://ui.shadcn.com/) – UI Components modern
+
+### Backend (BaaS)
+
+- [Firebase Authentication](https://firebase.google.com/products/auth)
+- [Cloud Firestore](https://firebase.google.com/products/firestore)
+- [Firebase Storage](https://firebase.google.com/products/storage)
+
+### Tools
+
+- [Vercel](https://vercel.com) – Hosting frontend
+- React Firebase Hooks – integrasi auth + data
+- Figma (optional) – UI Design
+
+---
+
+## ✨ Features
+
+- 🔐 **User Auth** – Register/login via email
+- 📝 **Submit Prompt** – Tambahkan prompt + output (Coming Soon)
+- 🗂️ **Prompt Explorer** – Jelajah prompt berdasarkan kategori/tag
+- 🔍 **Search & Filter** – Cari berdasarkan keyword
+- 📄 **Prompt Detail Page** – Lihat prompt + hasilnya
+- ⭐ **Bookmark** – Simpan prompt favorit (Coming Soon)
+- 🧪 **Output Showcase** – Upload hasil dari prompt (text/image/link)
+- 👤 **User Profile** – Lihat koleksi pribadi (Coming Soon)
+
+---
+
+## 🛠 Setup Instructions
+
+### 1. Clone Repo
+
+```bash
+git clone https://github.com/Adesvian/pake-prompt.git
+cd pake-prompt
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+# atau
+yarn install
+```
+
+### 3. Setup Firebase
+
+- Buat project baru di [Firebase Console](https://console.firebase.google.com/)
+- Aktifkan:
+  - Authentication (Email/Password)
+  - Cloud Firestore
+  - Storage
+- Copy config dan buat file `.env`:
+
+```env
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+```
+
+### 4. Run Local Dev
 
 ```bash
 npm run dev
-# or
+# atau
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🤖 AI Support Explanation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Meskipun sistem **tidak terintegrasi langsung dengan model AI**, namun tetap sangat relevan:
 
-## Learn More
+- Semua prompt ditujukan untuk digunakan di ChatGPT, Midjourney, Claude, dll
+- User bisa mengunggah **hasil nyata** dari tools AI sebagai showcase
+- Platform ini berperan sebagai **arsip dan referensi komunitas** untuk penggunaan AI secara praktis
 
-To learn more about Next.js, take a look at the following resources:
+### 🚀 Potensi Integrasi AI ke Depan
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- GPT API integration untuk preview langsung
+- AI ranking untuk prompt effectiveness
+- Smart search powered by LLM
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 📬 Kontribusi
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Pull request welcome! Kamu bisa bantu tambah prompt, improve UI, atau bahkan integrasi AI.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🧑‍💻 Author
+
+Created by [@Adesvian](https://github.com/Adesvian) ✨
