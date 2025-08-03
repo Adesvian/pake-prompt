@@ -49,7 +49,7 @@ export default function Header() {
               <LoginDialog />
             ) : (
               <>
-                <Button>New post</Button>
+                <Button className="cursor-pointer">New post</Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <div className="cursor-pointer">

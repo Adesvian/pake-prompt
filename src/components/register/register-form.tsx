@@ -2,13 +2,20 @@
 
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
-import { signInWithPopup } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  updateProfile,
+} from "firebase/auth";
 import { toast } from "sonner";
 import Image from "next/image";
 import Link from "next/link";
 import { auth, githubProvider, googleProvider } from "@/lib/firebase/config";
-import { saveUserToFirestore } from "@/lib/firebase/service";
-import { getFirebaseErrorMessage } from "@/types/auth-context";
+import { createUser } from "@/lib/firebase/service";
+import {
+  getFirebaseErrorMessage,
+  isFirebaseAuthError,
+} from "@/types/auth-context";
 import { FormFields } from "./form-fields";
 import { SocialLoginButtons } from "./social-button";
 
@@ -30,10 +37,9 @@ export function RegisterForm() {
   }, []);
 
   const handleSubmit = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
+    async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      // Basic validation
       if (formData.password !== formData.cpassword) {
         setError("Passwords do not match");
         return;
@@ -44,10 +50,41 @@ export function RegisterForm() {
         return;
       }
 
-      console.log("Form submitted", formData);
-      // Add your registration logic here
+      setLoading(true);
+      setError("");
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(
+          auth,
+          formData.email,
+          formData.password
+        );
+
+        // Update displayName
+        await updateProfile(userCredential.user, {
+          displayName: `${formData.firstname} ${formData.lastname}`,
+        });
+
+        const userWithUpdatedName = {
+          ...userCredential.user,
+          displayName: `${formData.firstname} ${formData.lastname}`,
+        };
+
+        await createUser(userWithUpdatedName);
+
+        toast.success("Account created successfully!");
+        router.push("/");
+      } catch (err: unknown) {
+        if (isFirebaseAuthError(err)) {
+          setError(getFirebaseErrorMessage(err.code));
+        } else {
+          setError("Something went wrong, please try again");
+        }
+      } finally {
+        setLoading(false);
+      }
     },
-    [formData]
+    [formData, router]
   );
 
   const handleProviderLogin = useCallback(
@@ -59,13 +96,16 @@ export function RegisterForm() {
         const selectedProvider =
           provider === "google" ? googleProvider : githubProvider;
         const result = await signInWithPopup(auth, selectedProvider);
-        await saveUserToFirestore(result.user);
+        await createUser(result.user);
 
         toast.success(`Welcome ${result.user.displayName}`);
-        router.push("/");
-      } catch (err: any) {
-        const message = getFirebaseErrorMessage(err.code);
-        setError(message || "Login failed");
+      } catch (err: unknown) {
+        if (isFirebaseAuthError(err)) {
+          const message = getFirebaseErrorMessage(err.code);
+          setError(message);
+        } else {
+          setError("Something went wrong, please try again");
+        }
       } finally {
         setLoading(false);
       }

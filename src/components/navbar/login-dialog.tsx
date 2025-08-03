@@ -18,9 +18,12 @@ import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import { signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth, googleProvider, githubProvider } from "@/lib/firebase/config";
-import { saveUserToFirestore } from "@/lib/firebase/service";
+import { createUser } from "@/lib/firebase/service";
 import { toast } from "sonner";
-import { getFirebaseErrorMessage } from "@/types/auth-context";
+import {
+  getFirebaseErrorMessage,
+  isFirebaseAuthError,
+} from "@/types/auth-context";
 import Link from "next/link";
 
 export default function LoginDialog() {
@@ -49,13 +52,17 @@ export default function LoginDialog() {
         formData.email,
         formData.password
       );
-      await saveUserToFirestore(res.user);
+      await createUser(res.user);
 
       toast.success(`Welcome back, ${res.user.email}!`);
       setOpen(false);
-    } catch (err: any) {
-      const message = getFirebaseErrorMessage(err.code);
-      setError(message || "Login failed");
+    } catch (err: unknown) {
+      if (isFirebaseAuthError(err)) {
+        const message = getFirebaseErrorMessage(err.code);
+        setError(message);
+      } else {
+        setError("Something went wrong, please try again");
+      }
     } finally {
       setLoading(false);
     }
@@ -69,13 +76,18 @@ export default function LoginDialog() {
       const selectedProvider =
         provider === "google" ? googleProvider : githubProvider;
       const result = await signInWithPopup(auth, selectedProvider);
-      await saveUserToFirestore(result.user);
+      await createUser(result.user);
 
       toast.success(`Welcome ${result.user.displayName}`);
       setOpen(false);
-    } catch (err: any) {
-      const message = getFirebaseErrorMessage(err.code);
-      setError(message || "Login failed");
+    } catch (err: unknown) {
+      console.error("Login error:", err);
+      if (isFirebaseAuthError(err)) {
+        const message = getFirebaseErrorMessage(err.code);
+        setError(message);
+      } else {
+        setError("Something went wrong, please try again");
+      }
     } finally {
       setLoading(false);
     }

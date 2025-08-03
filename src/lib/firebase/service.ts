@@ -9,10 +9,17 @@ import {
 } from "firebase/firestore";
 import { User } from "firebase/auth";
 import { app } from "@/lib/firebase/config";
+import {
+  OutputBase,
+  OutputWithPrompt,
+  PromptBase,
+  PromptWithUser,
+  UserBase,
+} from "@/types/data";
 
 const db = getFirestore(app);
 
-export const saveUserToFirestore = async (user: User) => {
+export const createUser = async (user: User) => {
   if (!user) return;
 
   const userRef = doc(db, "users", user.uid);
@@ -31,58 +38,140 @@ export const saveUserToFirestore = async (user: User) => {
 
     try {
       await setDoc(userRef, newUser);
-      console.log("User saved to Firestore:", newUser);
+      return;
     } catch (error) {
-      console.error("Error saving user to Firestore:", error);
+      throw error;
     }
   } else {
-    console.log("User already exists in Firestore.");
+    return;
   }
 };
 
-export const fetchData = async (collectionName: string) => {
+export const fetchData = async (
+  collectionName: string
+): Promise<OutputWithPrompt[]> => {
   try {
+    // Step 1: Fetch all outputs
     const outputSnapshot = await getDocs(collection(db, collectionName));
-    const results: any[] = [];
 
-    for (const docSnap of outputSnapshot.docs) {
-      const outputData = docSnap.data();
+    if (outputSnapshot.empty) {
+      return [];
+    }
 
-      let promptData = null;
-      let userData = null;
+    // Step 2: Collect all unique prompt and user references
+    const promptRefsMap = new Map<string, DocumentReference>();
+    const outputsData: (OutputBase & { id: string })[] = [];
 
-      const promptRef = outputData.prompt_id as DocumentReference | null;
+    outputSnapshot.docs.forEach((docSnap) => {
+      const outputData = docSnap.data() as OutputBase;
+      const outputWithId = {
+        id: docSnap.id,
+        ...outputData,
+      };
 
-      if (promptRef) {
-        const promptSnap = await getDoc(promptRef);
-        if (promptSnap.exists()) {
-          promptData = promptSnap.data();
+      outputsData.push(outputWithId);
 
-          const userRef = promptData.created_by as DocumentReference | null;
-          if (userRef) {
-            const userSnap = await getDoc(userRef);
-            if (userSnap.exists()) {
-              const user = userSnap.data();
-              userData = {
-                displayName: user.displayName ?? "Unknown",
-                photoURL: user.photoURL ?? null,
-              };
+      // Collect unique prompt references
+      if (outputData.prompt_id) {
+        promptRefsMap.set(outputData.prompt_id.path, outputData.prompt_id);
+      }
+    });
+
+    // Step 3: Batch fetch all prompts
+    const promptsMap = new Map<string, PromptBase & { id: string }>();
+    const userRefsMap = new Map<string, DocumentReference>();
+
+    const promptFetchPromises = Array.from(promptRefsMap.entries()).map(
+      async ([promptPath, promptRef]) => {
+        try {
+          const promptSnap = await getDoc(promptRef);
+          if (promptSnap.exists()) {
+            const promptData = promptSnap.data() as PromptBase;
+            const promptWithId = {
+              id: promptSnap.id,
+              ...promptData,
+            };
+
+            promptsMap.set(promptPath, promptWithId);
+
+            // Collect unique user references
+            if (promptData.created_by) {
+              userRefsMap.set(
+                promptData.created_by.path,
+                promptData.created_by
+              );
             }
           }
-          promptData = {
-            id: promptSnap.id,
-            ...promptData,
-            created_by: userData,
+        } catch (error) {
+          console.error(`Error fetching prompt ${promptPath}:`, error);
+        }
+      }
+    );
+
+    await Promise.all(promptFetchPromises);
+
+    // Step 4: Batch fetch all users
+    const usersMap = new Map<
+      string,
+      { displayName: string; photoURL: string | null }
+    >();
+
+    const userFetchPromises = Array.from(userRefsMap.entries()).map(
+      async ([userPath, userRef]) => {
+        try {
+          const userSnap = await getDoc(userRef);
+          if (userSnap.exists()) {
+            const userData = userSnap.data() as UserBase;
+            usersMap.set(userPath, {
+              displayName: userData.displayName ?? "Unknown",
+              photoURL: userData.photoURL ?? null,
+            });
+          }
+        } catch (error) {
+          console.error(`Error fetching user ${userPath}:`, error);
+        }
+      }
+    );
+
+    await Promise.all(userFetchPromises);
+
+    // Step 5: Construct final results
+    const results: OutputWithPrompt[] = outputsData.map((outputData) => {
+      let promptWithUser: PromptWithUser | null = null;
+
+      if (outputData.prompt_id) {
+        const promptData = promptsMap.get(outputData.prompt_id.path);
+
+        if (promptData) {
+          const userData = usersMap.get(promptData.created_by.path);
+
+          promptWithUser = {
+            id: promptData.id,
+            title: promptData.title,
+            prompt: promptData.prompt,
+            tags: promptData.tags,
+            category: promptData.category,
+            created_at: promptData.created_at,
+            created_by: {
+              displayName: userData?.displayName ?? "Unknown",
+              photoURL: userData?.photoURL ?? null,
+            },
           };
         }
       }
 
-      results.push({
-        id: docSnap.id,
-        ...outputData,
-        prompt_id: promptData,
-      });
-    }
+      return {
+        id: outputData.id,
+        ai_model: outputData.ai_model,
+        result: outputData.result,
+        type: outputData.type,
+        prompt_id: promptWithUser,
+        created_by: {
+          displayName: "Unknown",
+          photoURL: null,
+        },
+      };
+    });
 
     return results;
   } catch (err) {

@@ -2,6 +2,7 @@ import { MenuItem, HoveredLink } from "@/components/ui/navbar-menu";
 import PlatformItems from "./platforms";
 import { Separator } from "@/components/ui/separator";
 import { NavbarMenuItemsProps } from "@/types/navbar";
+import { Badge } from "../ui/badge";
 
 export default function NavbarMenuItems({
   active,
@@ -23,9 +24,11 @@ export default function NavbarMenuItems({
 
       <MenuItem setActive={setActive} active={active} item="For Creators">
         <div className="flex flex-col space-y-4 text-sm">
-          <HoveredLink href="/web-dev">Leaderboards</HoveredLink>
-          <HoveredLink href="/interface-design">
-            Learn to Make Prompt
+          <HoveredLink href="/">
+            Leaderboards <Badge>Soon</Badge>
+          </HoveredLink>
+          <HoveredLink href="/">
+            Learn to Make Prompt <Badge>Soon</Badge>
           </HoveredLink>
         </div>
       </MenuItem>
@@ -34,15 +37,23 @@ export default function NavbarMenuItems({
         <div className="grid gap-6 md:grid-cols-2 text-sm">
           <div className="flex flex-col gap-2">
             <span className="mb-1 font-semibold text-neutral-500">Event</span>
-            <HoveredLink href="/event">Event</HoveredLink>
-            <HoveredLink href="/prompt-battle">Prompt Battle</HoveredLink>
+            <HoveredLink href="/">
+              Event <Badge>Soon</Badge>
+            </HoveredLink>
+            <HoveredLink href="/">
+              Prompt Battle <Badge>Soon</Badge>
+            </HoveredLink>
           </div>
           <div className="flex flex-col gap-2">
             <span className="mb-1 font-semibold text-neutral-500">Learn</span>
-            <HoveredLink href="/blog">Blog</HoveredLink>
-            <HoveredLink href="/resource">Resource</HoveredLink>
-            <HoveredLink href="/platform-docs">
-              Platform Documentation
+            <HoveredLink href="/">
+              Blog <Badge>Soon</Badge>
+            </HoveredLink>
+            <HoveredLink href="/">
+              Resource <Badge>Soon</Badge>
+            </HoveredLink>
+            <HoveredLink href="/">
+              Platform Documentation <Badge>Soon</Badge>
             </HoveredLink>
           </div>
         </div>

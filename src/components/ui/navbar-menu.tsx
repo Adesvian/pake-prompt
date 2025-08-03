@@ -3,7 +3,7 @@ import React from "react";
 import { motion } from "motion/react";
 
 const transition = {
-  type: "spring",
+  type: "spring" as const,
   mass: 0.5,
   damping: 11.5,
   stiffness: 100,
@@ -87,7 +87,7 @@ export const ProductItem = ({
   src: string;
 }) => {
   return (
-    <a href={href} className="flex space-x-2">
+    <a href={href} target="_blank" className="flex space-x-2">
       <img
         src={src}
         width={140}
