@@ -1,6 +1,10 @@
-# 🧠 PakePrompt
+<img width="1919" height="924" alt="image" src="https://github.com/user-attachments/assets/495369e7-1b5c-4dfb-b895-67ee92d22983" />
+
+## 🧠 PakePrompt
 
 PakePrompt adalah aplikasi web berbasis komunitas yang menyimpan dan membagikan berbagai **AI prompt** beserta **hasil/output-nya**, tanpa integrasi langsung ke model AI. Cocok buat siapa aja yang butuh referensi prompt efektif buat ChatGPT, Midjourney, Claude, dan tools lainnya.
+
+Check it out here 👉 [Live Preview](https://pakeprompt.netlify.app/)
 
 ---
 
@@ -113,8 +117,4 @@ Meskipun sistem **tidak terintegrasi langsung dengan model AI**, namun tetap san
 
 Pull request welcome! Kamu bisa bantu tambah prompt, improve UI, atau bahkan integrasi AI.
 
----
 
-## 🧑‍💻 Author
-
-Created by [@Adesvian](https://github.com/Adesvian) ✨
