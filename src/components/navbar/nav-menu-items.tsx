@@ -18,6 +18,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import LoginDialog from "./login-dialog";
+import { useAuthContext } from "@/context/auth-context";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Button } from "../ui/button";
 
 function NavbarMenuItemsDesktop({ active, setActive }: NavbarMenuItemsProps) {
   return (
@@ -75,6 +78,8 @@ function NavbarMenuItemsDesktop({ active, setActive }: NavbarMenuItemsProps) {
 }
 
 function NavbarMenuItemsMobile() {
+  const { user, loading, logout } = useAuthContext();
+  if (loading) return null;
   return (
     <>
       <DropdownMenu>
@@ -139,7 +144,43 @@ function NavbarMenuItemsMobile() {
             </Accordion>
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-            <LoginDialog />
+            {!user ? (
+              <LoginDialog />
+            ) : (
+              <>
+                <Accordion type="single" collapsible className="w-full">
+                  <AccordionItem value="user-1">
+                    <AccordionTrigger className="font-normal">
+                      <div className="flex items-center space-x-2">
+                        <Avatar>
+                          <AvatarImage
+                            src={
+                              user.photoURL || "https://github.com/shadcn.png"
+                            }
+                            alt={user.displayName || "User"}
+                          />
+                          <AvatarFallback>
+                            {user.displayName?.slice(0, 2).toUpperCase() ||
+                              "US"}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span>{user.displayName}</span>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-2">
+                      <Button className="w-full cursor-pointer">
+                        New post
+                      </Button>
+                    </AccordionContent>
+                    <AccordionContent className="pb-2" onClick={logout}>
+                      <Button className="w-full bg-black text-white">
+                        Logout
+                      </Button>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
+              </>
+            )}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
