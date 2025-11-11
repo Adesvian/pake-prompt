@@ -1,6 +1,8 @@
 "use client";
-import React from "react";
+import React, { AnchorHTMLAttributes } from "react";
 import { motion } from "motion/react";
+import Image from "next/image";
+import Link, { LinkProps } from "next/link";
 
 const transition = {
   type: "spring" as const,
@@ -87,8 +89,8 @@ export const ProductItem = ({
   src: string;
 }) => {
   return (
-    <a href={href} target="_blank" className="flex space-x-2">
-      <img
+    <Link href={href} target="_blank" className="flex space-x-2">
+      <Image
         src={src}
         width={140}
         height={50}
@@ -103,17 +105,42 @@ export const ProductItem = ({
           {description}
         </p>
       </div>
-    </a>
+    </Link>
   );
 };
 
-export const HoveredLink = ({ children, ...rest }: any) => {
+export const ProductItemList = ({
+  title,
+  href,
+  underlined = false,
+}: {
+  title: string;
+  href: string;
+  underlined?: boolean;
+}) => {
   return (
-    <a
+    <Link href={href} target="_blank">
+      <h4
+        className={`text-sm font-semibold text-black dark:text-white ${
+          underlined ? "underline [text-underline-offset:3px]" : ""
+        }`}
+      >
+        {title}
+      </h4>
+    </Link>
+  );
+};
+
+export const HoveredLink = ({
+  children,
+  ...rest
+}: React.PropsWithChildren<LinkProps & { className?: string }>) => {
+  return (
+    <Link
       {...rest}
-      className="text-neutral-700 dark:text-neutral-200 hover:text-black "
+      className="text-neutral-700 dark:text-neutral-200 hover:text-black"
     >
       {children}
-    </a>
+    </Link>
   );
 };

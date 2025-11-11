@@ -11,7 +11,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Image from "next/image";
 import LoginDialog from "@/components/navbar/login-dialog";
-import NavbarMenuItems from "@/components/navbar/nav-menu-items";
+import {
+  NavbarMenuItemsDesktop,
+  NavbarMenuItemsMobile,
+} from "@/components/navbar/nav-menu-items";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuthContext } from "@/context/auth-context";
@@ -40,11 +43,12 @@ export default function Header() {
             </Link>
           </div>
 
-          <div className="flex gap-16 items-center justify-center">
-            <NavbarMenuItems active={active} setActive={setActive} />
+          <div className="hidden lg:flex gap-16 items-center justify-center">
+            <NavbarMenuItemsDesktop active={active} setActive={setActive} />
           </div>
 
-          <div className="flex items-center gap-x-2">
+          {/* Navigation for desktop viewport  */}
+          <div className="hidden lg:flex items-center gap-x-2">
             {!user ? (
               <LoginDialog />
             ) : (
@@ -78,6 +82,11 @@ export default function Header() {
                 </DropdownMenu>
               </>
             )}
+          </div>
+
+          {/* Navigation for mobile viewport  */}
+          <div className="block lg:hidden">
+            <NavbarMenuItemsMobile />
           </div>
         </Menu>
       </div>

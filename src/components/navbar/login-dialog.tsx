@@ -25,6 +25,7 @@ import {
   isFirebaseAuthError,
 } from "@/types/auth-context";
 import Link from "next/link";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function LoginDialog() {
   const [showPassword, setShowPassword] = useState(false);
@@ -36,6 +37,9 @@ export default function LoginDialog() {
     email: "",
     password: "",
   });
+
+  const isMobile = useIsMobile();
+  if (typeof window === "undefined") return null;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -96,7 +100,12 @@ export default function LoginDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">Login</Button>
+        <Button
+          variant={`${isMobile ? "outline" : "default"}`}
+          className="w-full text-center"
+        >
+          Login
+        </Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[425px]">

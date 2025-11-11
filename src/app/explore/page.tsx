@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast, Toaster } from "sonner";
+import Link from "next/link";
 
 // Type definitions for better type safety
 type FilterType = "all" | "image" | "text" | "video";
@@ -247,14 +248,14 @@ const ItemCard = ({ item }: { item: OutputWithPrompt }) => {
                   {item.result}
                 </div>
               ) : (
-                <a
+                <Link
                   href={item.result}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-blue-600 dark:text-blue-400 hover:underline text-sm break-all"
                 >
                   View Video →
-                </a>
+                </Link>
               )}
             </div>
           )}

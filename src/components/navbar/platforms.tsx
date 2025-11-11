@@ -1,6 +1,10 @@
-import { ProductItem } from "@/components/ui/navbar-menu";
+import {
+  HoveredLink,
+  ProductItem,
+  ProductItemList,
+} from "@/components/ui/navbar-menu";
 
-export default function PlatformItems() {
+export function PlatformItems() {
   return (
     <>
       <ProductItem
@@ -39,6 +43,27 @@ export default function PlatformItems() {
         src="https://boxplot.com/wp-content/uploads/2024/11/IBM_Watson_AI-1024x665.jpg"
         description="Enterprise-ready AI & ML tools from IBM."
       />
+    </>
+  );
+}
+
+export function PlatformItemsList() {
+  return (
+    <>
+      <ProductItemList title="ChatGPT" href="https://chat.openai.com/" />
+      <ProductItemList title="Gemini" href="https://gemini.google.com/" />
+      <ProductItemList title="Claude" href="https://claude.ai/" />
+      <ProductItemList title="Leonardo AI" href="https://leonardo.ai/" />
+      <ProductItemList title="Bing Copilot" href="https://www.bing.com/chat" />
+      <ProductItemList
+        title="IBM WatsonX"
+        href="https://www.ibm.com/watsonx/"
+      />
+      <HoveredLink href="/platforms">
+        <span className="text-sm font-semibold text-black dark:text-white underline [text-underline-offset:3px]">
+          See all &rarr;
+        </span>
+      </HoveredLink>
     </>
   );
 }

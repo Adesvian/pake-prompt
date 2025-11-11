@@ -6,8 +6,8 @@ import { platforms } from "@/types/platforms";
 export default function PlatformPage() {
   return (
     <BaseLayout>
-      <div className="relative w-full flex items-center justify-center min-h-[400px]">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full p-30">
+      <div className="mt-24 mb-4 sm:my-0">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 w-full px-4 sm:p-30">
           {platforms.map((item, index) => (
             <Link
               key={index}
@@ -28,10 +28,8 @@ export default function PlatformPage() {
                   <h4 className="text-lg font-semibold text-black dark:text-white">
                     {item.title}
                   </h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-300 max-w-[12rem]">
-                    {item.description.length > 50
-                      ? item.description.substring(0, 50) + "..."
-                      : item.description}
+                  <p className="text-sm sm:text-base line-clamp-2">
+                    {item.description}
                   </p>
                 </div>
               </div>

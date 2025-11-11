@@ -1,4 +1,4 @@
-// app/platform/[slug]/page.tsx
+// app/platforms/[slug]/page.tsx
 
 import BaseLayout from "@/app/views/components/layout/base-layout";
 import { platforms } from "@/types/platforms";
@@ -6,16 +6,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-// Define the Platform type
-// Page Props interface
+// Page Props interface - params is now a Promise in Next.js 15
 interface PageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
-// Generate static params for all platforms (optional - for static generation)
-export async function generateStaticParams(): Promise<{ slug: string }[]> {
+// Generate static params for all platforms
+export async function generateStaticParams() {
   return platforms.map((platform) => ({
     slug: platform.slug,
   }));
@@ -23,7 +22,9 @@ export async function generateStaticParams(): Promise<{ slug: string }[]> {
 
 // Generate metadata for each platform page
 export async function generateMetadata({ params }: PageProps) {
-  const platform = platforms.find((p) => p.slug === params.slug);
+  // Await params first
+  const { slug } = await params;
+  const platform = platforms.find((p) => p.slug === slug);
 
   if (!platform) {
     return {
@@ -43,9 +44,10 @@ export async function generateMetadata({ params }: PageProps) {
   };
 }
 
-// Main page component
-export default function PlatformDetail({ params }: PageProps) {
-  const { slug } = params;
+// Main page component - must be async
+export default async function PlatformDetail({ params }: PageProps) {
+  // Await params before destructuring
+  const { slug } = await params;
 
   // Find the platform by slug
   const platform = platforms.find((p) => p.slug === slug);
@@ -57,7 +59,7 @@ export default function PlatformDetail({ params }: PageProps) {
 
   return (
     <BaseLayout>
-      <div className="max-w-6xl mx-auto px-4 pt-30">
+      <div className="max-w-6xl mx-auto px-4 pt-30 mb-4">
         {/* Breadcrumb */}
         <nav className="mb-4">
           <Link href="/platforms" className="text-white">
@@ -67,60 +69,60 @@ export default function PlatformDetail({ params }: PageProps) {
 
         {/* Header Section */}
         <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-lg p-8 mb-8">
-          <div className="flex flex-col md:flex-row items-start gap-8">
+          <div className="flex flex-col md:flex-row items-start sm:gap-8">
             <div className="flex-shrink-0">
               <Image
                 src={platform.image}
                 alt={platform.title}
                 width={120}
                 height={120}
-                className="w-42 h-42 object-cover rounded-lg shadow-md"
+                className="w-24 h-24 sm:w-42 sm:h-42 object-cover rounded-lg shadow-md mb-4 sm:mb-0"
               />
             </div>
             <div className="flex-1">
               <div className="flex flex-wrap items-center gap-4 mb-4">
-                <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+                <h1 className="text-2xl sm:text-4xl font-bold text-gray-900 dark:text-white">
                   {platform.title}
                 </h1>
-                <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-sm font-medium">
+                <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
                   {platform.category}
                 </span>
-                <span className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-3 py-1 rounded-full text-sm font-medium">
+                <span className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-3 py-1 rounded-full text-xs sm:text-sm font-medium">
                   {platform.pricing}
                 </span>
               </div>
-              <p className="text-xl text-gray-600 dark:text-gray-300 mb-6">
+              <p className="text-md sm:text-base text-gray-600 dark:text-gray-300 mb-6">
                 {platform.description}
               </p>
-              <a
-                href={platform.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center bg-black hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors font-medium"
-              >
-                Visit Platform
-                <svg
-                  className="ml-2 w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                  />
-                </svg>
-              </a>
             </div>
+            <Link
+              href={platform.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm inline-flex items-center bg-black hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition-colors font-medium"
+            >
+              Visit Platform
+              <svg
+                className="ml-2 w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                />
+              </svg>
+            </Link>
           </div>
         </div>
 
         {/* Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-4">
             {/* Description */}
             <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-lg p-6">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
@@ -177,7 +179,7 @@ export default function PlatformDetail({ params }: PageProps) {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-8">
+          <div className="space-y-4">
             {/* Pros */}
             <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-lg p-6">
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">

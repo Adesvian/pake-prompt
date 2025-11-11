@@ -64,7 +64,7 @@ export default function Home() {
 
         {/* background animasi */}
         <ThreeDMarquee
-          className="pointer-events-none absolute inset-0 h-full w-full"
+          className="pointer-events-none absolute h-full w-screen"
           images={images}
         />
       </section>
